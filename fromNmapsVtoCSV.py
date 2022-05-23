@@ -2,10 +2,9 @@
 # -*- coding: utf-8 -*-
 
 #Author: n0t4u
-#Version: 1.1.0
+#Version: 1.1.1
 
 #Notes
-#Add columns order option
 #Add remove unkown services
 
 #imports
@@ -21,15 +20,6 @@ import sys
 data=[]
 
 #Functions
-def getIP(f):
-	with open(f,"r",encoding="iso-8859-1") as file:
-		for line in file:
-			#print(line)
-			if re.search(r'Host:[ ]*[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}',line):
-				ip = re.search(r'[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}',line)[0]
-				#print(ip)
-				return ip
-
 def parseData(file):
 	try:
 		file = open(file,"r", encoding="UTF-8")
@@ -63,7 +53,7 @@ def parseData(file):
 						"service":p[3],
 						"version":"-"
 					}
-				else:
+				finally:
 					data.append(portData)
 			generateOutput(ip)
 			data.clear()
@@ -75,9 +65,7 @@ def generateOutput(ip):
 		order= args.order[0].split(",")
 	else:
 		order= ["ip","port","protocol","state","service","version"]
-	#print(order)
 	if args.print:
-		#print("print")
 		for port in data:
 			try:
 				print(port[order[0]],port[order[1]],port[order[2]],port[order[3]],port[order[4]],port[order[5]], sep="\t")
@@ -99,11 +87,8 @@ def generateOutput(ip):
 				except KeyError as e:
 					print(colored("[Error] Unknown key %s.","red") %e, "Allowed values separated by comma: ip, port, protocol, state, service, version ")
 					sys.exit(0)
-#			for line in parsedData.rstrip("\n").split("\n"):
-#				#print(ip,line)
-#				dataline= "%s\t%s\n" %(ip,line)
-				#outputFile.write(dataline) 
 		outputFile.close()
+		print("Results successfully saved in %s" %outputFilename)
 	return
 
 
@@ -112,6 +97,7 @@ parser= argparse.ArgumentParser()
 parser.add_argument("file",help="nmap sV .gnmap file to parse",nargs=1)
 parser.add_argument("-p","--print",dest="print", help="Print results instead of saving them into a file", action="store_true")
 parser.add_argument("-o","--order",dest="order", help="Output specific order separated by commas. Example: ip,port,protocol,state,service,version", nargs=1)
+#parser.add_argument("-u","--unknown",dest="unknown", help="Remove unknown services", action="store_true")
 args = parser.parse_args()
 
 #Main
@@ -119,10 +105,4 @@ if __name__ == '__main__':
 	if os.path.splitext(args.file[0])[1] != ".gnmap":
 		print(colored("[ERROR]","red")," .gnmap file required")
 	else:
-		#print(args.file[0])
-		#ip =getIP(args.file[0])
-		#parseData(args.file[0],ip)
-		#print(data)
 		parseData(args.file[0])
-		#generateOutput()
-		#generateOutput(ip)

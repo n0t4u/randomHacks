@@ -25,6 +25,8 @@ def parseData(file):
 		file = open(file,"r", encoding="UTF-8")
 		scan = file.read()
 		file.close()
+	except IOError:
+		print(colored("[Error] File %s doesn't exist." %file,"red"))
 	except Exception as e:
 		raise e
 	else:
@@ -45,14 +47,24 @@ def parseData(file):
 						"version":p[4]
 					}
 				except Exception as e:
-					portData={
-						"ip":ip,
-						"port":p[0].lstrip(" "),
-						"state":p[1],
-						"protocol":p[2],
-						"service":p[3],
-						"version":"-"
-					}
+					try:
+						portData={
+							"ip":ip,
+							"port":p[0].lstrip(" "),
+							"state":p[1],
+							"protocol":p[2],
+							"service":p[3],
+							"version":"-"
+						}
+					except Exception as e2:
+						portData={
+							"ip":ip,
+							"port":p[0].lstrip(" "),
+							"state":p[1],
+							"protocol":p[2],
+							"service":"unknown",
+							"version":"-"
+						}
 				finally:
 					data.append(portData)
 			generateOutput(ip)

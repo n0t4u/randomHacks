@@ -30,8 +30,7 @@ def parseData(file):
 	except Exception as e:
 		raise e
 	else:
-		for ipScan in re.findall(r'Host: [\d\.]+[ \(\)]+\tPorts:[\S ]+',scan,re.I):
-			#print(ipScan)
+		for ipScan in re.findall(r'Host: [\d\.]+ ?\(?[\S]*\)?\tPorts:[\S ]+',scan,re.I):
 			host, ports = ipScan.split("\t")
 			ip =re.search(r'[\d\.]+',host)[0]
 			ports = ports.split(":")[1]

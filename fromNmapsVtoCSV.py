@@ -68,7 +68,6 @@ def parseData(file):
 					data.append(portData)
 			generateOutput(ip)
 			data.clear()
-		#print(data)
 	return
 
 def generateOutput(ip):
@@ -77,24 +76,30 @@ def generateOutput(ip):
 	else:
 		order= ["ip","port","protocol","state","service","version"]
 	if args.print:
+		#print(*order, sep="\t")
 		for port in data:
 			try:
-				print(port[order[0]],port[order[1]],port[order[2]],port[order[3]],port[order[4]],port[order[5]], sep="\t")
-				#print(port[order[0]],port[order[1]],port[order[2]],port[order[3]],port[order[4]],port[order[5]], sep=",")
+				#print(port[order[0]],port[order[1]],port[order[2]],port[order[3]],port[order[4]],port[order[5]], sep="\t")
+				for o in order:
+					print(port[o], end="\t")
+				print()
 			except KeyError as e:
 				print(colored("[Error] Unknown key %s.","red") %e, "Allowed values separated by comma: ip, port, protocol, state, service, version ")
 				sys.exit(0)
-		#for line in parsedData.rstrip("\n").split("\n"):
-		#	print(ip,line,sep="\t")
 	else:
 		outputFilename="nmap_parsed_open_ports_%s.txt" %ip
 		with open(outputFilename,"w",encoding="UTF-8") as outputFile:
+			header = ";".join(order) + "\n"
+			outputFile.write(header)
 			for port in data:
 				try:
-					output= ";".join([port[order[0]],port[order[1]],port[order[2]],port[order[3]],port[order[4]],port[order[5]]])
-					output = output+"\n"
+					outputOrdered = []
+					for o in order:
+						outputOrdered.append(port[o])
+					output = ";".join(outputOrdered) + "\n"
+					#output= ";".join([port[order[0]],port[order[1]],port[order[2]],port[order[3]],port[order[4]],port[order[5]]])
+					#output = output+"\n"
 					outputFile.write(output)
-					#print(port[order[0]],port[order[1]],port[order[2]],port[order[3]],port[order[4]],port[order[5]], sep=";")
 				except KeyError as e:
 					print(colored("[Error] Unknown key %s.","red") %e, "Allowed values separated by comma: ip, port, protocol, state, service, version ")
 					sys.exit(0)

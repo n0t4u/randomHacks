@@ -33,7 +33,7 @@ def parseData(file):
 		for ipScan in re.findall(r'Host: [\d\.]+ ?\(?[\S]*\)?\tPorts:[\S ]+',scan,re.I):
 			host, ports = ipScan.split("\t")
 			ip =re.search(r'[\d\.]+',host)[0]
-			ports = ports.split(":")[1]
+			ports = ports.split(":",1)[1]
 			for port in re.sub(r'[\/]{1,}','/',ports).split('/,'):
 				p = port.split("/")
 				try:

@@ -31,3 +31,14 @@ chmod +x nmapScans.sh
 # Scan options
 ./nmapScans.sh 127.0.0.1 "-sS -T4 -Pn"
 ```
+
+## alternateBruteForce
+Simple Python script that allows to generate a dictionary to avoid bruteforce username blocks when a web server checks the number of consecutive tries.
+
+### Usage
+```
+python3 -u <USER_TO_BRUTEFORCE> -r <NUMBER OF REPETITIONS> -t <LENGTH OF DICTIONARY> [-o <OUTPUT>]
+```
+
+## Deprecated
+* fromFuriousToNmapsV

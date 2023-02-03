@@ -47,13 +47,13 @@ chmod +x nmapScans.sh
 
 ## WindowsAlias
 1. Create an alias.bat file (C:\Users\n0t4u\Documents\alias.bat)
-2. Access to Register Editor ( ![Windows](https://icons8.com/icon/35083/windows-10)+r -> regedit).
+2. Access to Register Editor (Windows+r -> regedit).
 3. Go to folder:
 HKEY_CURRENT_USER\SOFTWARE\Microsoft\Command Processor
 4. If this folder does not exist execute the following command.
 ``` cmd
 reg add "HKCU\Software\Microsoft\Command Processor"
-#Alternative for step 5. Not tested
+REM Alternative for step 5. Not tested
 reg add "HKCU\Software\Microsoft\Command Processor" /v AutoRun /d "<PATH_TO_FILE>"
 ```
 5. In the Command Processor folder, add a new "String Value" with name AutoRun and Data the path to alias.bat file.

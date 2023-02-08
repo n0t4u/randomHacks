@@ -59,5 +59,5 @@ else
 	nmapsV "${1}" "${openPorts}" "${options}"
 fi
 
-echo -e "${Green}"Script finished sucessfully${ColorOff}"
+echo -e "${Green}Script finished sucessfully${ColorOff}"
 exit 0

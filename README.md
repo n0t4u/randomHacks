@@ -1,11 +1,13 @@
 # randomHacks
 
-Repository with small scripts for specific tasks for work
+Repository with small scripts for specific tasks for hacking
 
 - [alternateBruteForce](#alternatebruteforce)
 - [fromNmapsVtoCSV](#fromnmapsvtocsv)
 - [nmapScans](#nmapscans)
 - [WindowsAlias](#WindowsAlias)
+
+**Note.** Major projects have been moved to its own repository.
 
 ## alternateBruteForce
 Simple Python script that allows to generate a dictionary to avoid bruteforce username blocks when a web server checks the number of consecutive tries.

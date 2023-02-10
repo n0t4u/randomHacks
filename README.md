@@ -3,7 +3,11 @@
 Repository with small scripts for specific tasks for hacking
 
 - [alternateBruteForce](#alternatebruteforce)
+- [bannerGrabber](#bannerGrabber)
+- [EasyAndroidStaticAnalysis](https://github.com/n0t4u/easyAndroidStaticAnalysis)
 - [fromNmapsVtoCSV](#fromnmapsvtocsv)
+- [LinuxAlias](#LinuxAlias)
+- [manageProject](https://github.com/n0t4u/manageProject)
 - [nmapScans](#nmapscans)
 - [WindowsAlias](#WindowsAlias)
 
@@ -15,6 +19,17 @@ Simple Python script that allows to generate a dictionary to avoid bruteforce us
 ### Usage
 ``` bash
 python3 -u <USER_TO_BRUTEFORCE> -r <NUMBER OF REPETITIONS> -t <LENGTH OF DICTIONARY> [-o <OUTPUT>]
+```
+
+## bannerGrabber
+Bash script to automatically perform banner grabbing and highlight which assets and ports responds to any command injected.
+
+It does not perform any further checks, they must be done manually later.
+
+### Usage
+``` bash
+#file.txt must be in IP PORT format
+./bannerGrabber.sh file.txt
 ```
 
 ## fromNmapsVtoCSV
@@ -32,6 +47,11 @@ python3 fromNapsVtoCSV.py nmap_sV_127.0.0.1.gnmap --order=ip,port,service,versio
 for file in $(ls nmap_sV_*.gnmap); do python3 fromNmapsVtoCSV.py $file --print; done > nmapParser.txt
 ```
 Order output options.   ip,port,protocol,state,service,version
+
+## LinuxAlias
+Small bash script that automatically add some alias to you bash or zsh shell.
+
+TO DO. Add checks before adding any alias.
 
 ## nmapScans
 Bash script that executes a full ports scan, parse the results and performs a second scan with version option only to the open ports.

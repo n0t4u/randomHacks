@@ -14,7 +14,7 @@ declare -a alias=('cd..="cd .."'
 'nmapParser="python3 /opt/randomHacks/fromNmapsVtoCSV.py"'
 'nmapScan="/opt/randomHacks/nmapScans.sh"'
 'manageProject="python3 /opt/manageProject/project.py"'
-'DNSResolver="python3 /opt/DNSResolver/DNSResolver.py"'
+'DNSResolver="python3 /opt/randomHacks/DNSResolver.py"'
 )
 
 declare -a functions=('back() {pathChange=""; for n in {1..$1}; do pathChange+="../" ;done; cd "${pathChange}";}')

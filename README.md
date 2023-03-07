@@ -1,9 +1,10 @@
 # randomHacks
 
-Repository with small scripts for specific tasks for hacking
+Repository with small scripts for specific hacking tasks.
 
 - [alternateBruteForce](#alternatebruteforce)
 - [bannerGrabber](#bannerGrabber)
+- [dnsResolver](#DNSResolver)
 - [EasyAndroidStaticAnalysis](https://github.com/n0t4u/easyAndroidStaticAnalysis)
 - [fromNmapsVtoCSV](#fromnmapsvtocsv)
 - [LinuxAlias](#LinuxAlias)
@@ -30,6 +31,15 @@ It does not perform any further checks, they must be done manually later.
 ``` bash
 #file.txt must be in IP PORT format
 ./bannerGrabber.sh file.txt
+```
+
+## DNSResolver
+Automatic DNS resolution tool for several domains and different ouputs.
+
+### Usage
+``` bash
+python3 DNSResolver.py --file <FILE>
+python3 DNSResolver.py --file <FILE> --ip
 ```
 
 ## fromNmapsVtoCSV

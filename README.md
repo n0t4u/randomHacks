@@ -29,8 +29,10 @@ It does not perform any further checks, they must be done manually later.
 
 ### Usage
 ``` bash
+#Optional in case you have used fromNmapsVtoCSV.py
+cat nmapParser.txt| cut -f 1,2 > nmapParser_ip-port.txt
 #file.txt must be in IP PORT format
-./bannerGrabber.sh file.txt
+./bannerGrabber.sh file_ip-port.txt
 ```
 
 ## DNSResolver
@@ -61,7 +63,8 @@ Order output options.   ip,port,protocol,state,service,version
 ## LinuxAlias
 Small bash script that automatically add some alias to you bash or zsh shell.
 
-TO DO. Add checks before adding any alias.
+### TO DO
+- Add checks before adding any alias.
 
 ## nmapScans
 Bash script that executes a full ports scan, parse the results and performs a second scan with version option only to the open ports.
@@ -75,7 +78,13 @@ chmod +x nmapScans.sh
 ./nmapScans.sh ips.txt
 # Scan options
 ./nmapScans.sh 127.0.0.1 "-sS -T4 -Pn"
+# Resume a previous session scan (must be execute in the same directory)
+./nmapScans.sh ips.txt --resume
 ```
+### TO DO
+- Add optional discovery scan option
+- Add optional UDP scan option
+- Check nmap installation
 
 ## WindowsAlias
 1. Create an alias.bat file (C:\Users\n0t4u\Documents\alias.bat)

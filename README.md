@@ -4,7 +4,9 @@ Repository with small scripts for specific hacking tasks.
 
 - [alternateBruteForce](#alternatebruteforce)
 - [bannerGrabber](#bannerGrabber)
+- [CVSSCalculator](#https://github.com/n0t4u/CVSSCalculator)
 - [dnsResolver](#DNSResolver)
+- [DRAFMe](#https://github.com/n0t4u/DRAFMe)
 - [EasyAndroidStaticAnalysis](https://github.com/n0t4u/easyAndroidStaticAnalysis)
 - [fromNmapsVtoCSV](#fromnmapsvtocsv)
 - [LinuxAlias](#LinuxAlias)

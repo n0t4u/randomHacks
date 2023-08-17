@@ -51,7 +51,6 @@ versionHeaders = [
     "X-AspNetMvc-Version",
     "X-DNS-Prefetch-Control"
 ]
-
 cacheHeaders = [
     "Cache-Control",
     "Expires"
@@ -125,11 +124,11 @@ def getRoutes():
 
 def getForms():
     #Remove Enter, tabs and multi spaces to find all forms in the page
-    minResponse = re.sub('(\n|\t| {2,}(?= ))','',response)
+    minResponse = re.sub('(\r|\n|\t| {2,}(?= ))','',response)
     #minResponse = re.sub('</form>','</form>\n',minResponse)
     minResponse = re.sub(r'<form','\n<form',minResponse)
     #print(minResponse)
-    formsTags = re.findall('< ?form[\S ]+</form>',minResponse)
+    formsTags = re.findall('< ?form[\S ]+</form>',minResponse) #TODO. No detecta el formulario detail_incidence que tiene un multipart
     logging.info('Obtained {} forms'.format(len(formsTags)))
     for find in formsTags:
         #print("\n"+find)
@@ -187,27 +186,44 @@ def getResources():
 
 
 def getVersions():
+    print(colored('\n[»] Versions detected', 'blue'))
+    for header in versionHeaders:
+        if header in responseHeaders:
+            print('{}\t Reason: Server response header \'{}: {}\''.format(colored(responseHeaders[header], 'red'), header, responseHeaders[header]))
     return
 
 
 def getComments():
+    print(colored('\n[»] Comments in source code', 'blue'))
+    lineComments = re.findall(r'(^//[\S ]+|(?<=[ \t])//[\S ]+)',response)
+    print(colored('\t[»] One-line comments', 'blue'))
+    for lineComment in lineComments:
+        print(re.sub(r'^[\s]*// *','',lineComment))
+    minResponse = re.sub(r'(\r|\n|\t| {2,}(?= ))', '', response)
+    minResponse = re.sub(r'<!--','\n<!--',minResponse)
+    minResponse = re.sub(r'-->','-->\n',minResponse)
+    comments = re.findall(r'<!--.*-->',minResponse)
+    #TODO. Add the line number of the comments.
+    print(colored('\t[»] Block comments', 'blue'))
+    for comment in comments:
+        print(re.sub(r'(^<!-- *| *-->$)','',comment))
+    minResponse = re.sub(r'/\*','\n/*',minResponse)
+    minResponse = re.sub(r'\*/','*/\n',minResponse)
+    javaScriptBlockComments = re.findall(r'/\*.*\*/',minResponse)
+    print(colored('\t[»] JavaScript comments', 'blue'))
+    for blockComment in javaScriptBlockComments:
+        print(re.sub(r'(^/\*[ \*]*|[ \*]*\*/$)','',blockComment))
     return
-
 
 #Argparse
 parser = argparse.ArgumentParser(description='Extract relevant information from a given URL')
 parser.add_argument('url', help='URL to request and extract the information', action='store', nargs=1)
-parser.add_argument('-r', '--routes', dest='routes', help='Extract routes, forms and resources', action='store_true')
-parser.add_argument('-v', '--versions', dest='versions', help='Extract web technology versions', action='store_true')
-parser.add_argument('-c', '--comments', dest='comments', help='Extract comments from source code', action='store_true')
-parser.add_argument('-s', '--security-headers', dest='secHeaders', help='Extract the security headers', action='store_true')
-parser.add_argument('-a', '--all', dest='all', help='Extract all', action='store_true')
 #Misc options
 parser.add_argument('-T', '--timeout', dest='timeout', help='Set timeout for slow websites (sec).', nargs=1, type=int, default=[10])
 parser.add_argument('-d','--debug', dest='debug', help='Enable debug mode', action='store_true')
 parser.add_argument('--format', dest='format',help='Format for form values. Options: normal (default),json', choices=['normal','json'], default='normal')
 #Options from curl
-parser.add_argument('-X', '--method', dest='method', help='Request method to use (by default POST).', nargs=1,
+parser.add_argument('-X', '--method', dest='method', help='Request method to use (by default GET).', nargs=1,
                     choices=['POST', 'GET', 'PUT', 'DELETE', 'PATCH'], default='GET')
 parser.add_argument('-L', '--location', dest='redirect', help='Allow redirections', action='store_true')
 parser.add_argument('-H', '--headers', dest='headers', help='Request headers separated by commas', nargs=1)
@@ -220,7 +236,7 @@ args = parser.parse_args()
 #Main
 if __name__ == '__main__':
     if args.debug:
-        logging.basicConfig(level=logging.INFO)
+        logging.basicConfig(format='%(message)s',level=logging.INFO)
     session = requests.session()
     session.max_redirects = 5
     if args.headers:
@@ -232,20 +248,10 @@ if __name__ == '__main__':
     print('Extracting information from {}'.format(args.url[0]))
     statusCode, responseHeaders, response = sendRequest(session, args.method, args.url[0])
 
-    if args.all:
-        getSecurityHeaders()
-        getRoutes()
-        #getVersions()
-        #getComments()
-    else:
-        if args.secHeaders():
-            getSecurityHeaders()
-        if args.routes:
-            getRoutes()
-        if args.versions:
-            getVersions()
-        if args.comments:
-            getComments()
+    getSecurityHeaders()
+    getRoutes()
+    getVersions()
+    getComments()
 
     if args.output:
         with open(args.output[0],'w', encoding='utf-8') as file:

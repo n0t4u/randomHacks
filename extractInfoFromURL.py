@@ -119,6 +119,8 @@ def getSecurityHeaders():
 
 def getRoutes():
     getForms()
+    getResources()
+    getLinks()
     return
 
 
@@ -153,6 +155,8 @@ def getForms():
 
 
 def getInputValues(text, format):
+    #TODO. Get value input types and replace {{VALUE}} with its type
+    #TODO. Add * when detecting forms with hidden values
     if format == "json":
         values = {}
         inputs = re.split(r'<input',text)[1:]
@@ -162,7 +166,7 @@ def getInputValues(text, format):
             if inputName and inputValue:
                 values[input[inputName.start():inputName.end()]]=input[inputValue.start():inputValue.end()]
             elif inputName:
-                values[input[inputName.start():inputName.end()]]='VALUE'
+                values[input[inputName.start():inputName.end()]]='{{VALUE}}'
             else:
                 logging.info('TODO. JSON form not completed.\n{}'.format(text))
         return values
@@ -175,15 +179,45 @@ def getInputValues(text, format):
             if inputName and inputValue:
                 values = '{}{}={}&'.format(values,input[inputName.start():inputName.end()],input[inputValue.start():inputValue.end()])
             elif inputName:
-                values = '{}{}=VALUE&'.format(values, input[inputName.start():inputName.end()])
+                values = '{}{}={{{{VALUE}}}}&'.format(values, input[inputName.start():inputName.end()])
             else:
                 logging.info('TODO. Normal form not completed.\n{}'.format(text))
         return values[:-1]
 
 
 def getResources():
+    minResponse = re.sub('(\r|\n|\t| {2,})', ' ', response)
+    print(colored('\n[»] Style Resources', 'blue'))
+    cssMinResponse = re.sub(r'<link','\n<link',minResponse)
+    cssMinResponse = re.sub(r'>', '>\n', cssMinResponse)
+    cssLinks = re.findall(r'<link[\S ]+href=[\'"](?P<link>https?://[^\'"]+)',cssMinResponse)
+    for cssLink in cssLinks:
+        print(cssLink)
+    print(colored('\n[»] JavaScript Libraries', 'blue'))
+    jsMinResponse = re.sub(r'<script>','\n<script>',minResponse)
+    jsMinResponse = re.sub(r'</script>', '</script>\n',jsMinResponse)
+    javascriptSrcs = re.findall(r'<script[\S ]+src=[\'"](?P<script>https?://[^\'"]+)[\S ]+</script>',jsMinResponse) #
+    for javascriptSrc in javascriptSrcs:
+        print(javascriptSrc)
     return
 
+
+def getLinks():
+    minResponse = re.sub('(\r|\n|\t| {2,})', ' ', response)
+    print(colored('\n[»] Links', 'blue'))
+    linkMinResponse = re.sub(r'<a','\n<a',minResponse)
+    links = re.findall(r'<a[\S ]+href=[\'"](?P<link>[^\'"]+)[\S ]+>', linkMinResponse)
+    for link in links:
+        if re.search(r'^https?://',link):
+            print(link)
+        elif re.search(r'^[#?]',link):
+            print('{}{}'.format(args.url[0],link))
+        elif re.search(r'/',link):
+            print('{}://{}{}'.format(url.scheme,url.hostname,link))
+        elif re.search(r'(tel:|mailto:)',link):
+            print(link)
+        else:
+            print("NO {}".format(link))
 
 def getVersions():
     print(colored('\n[»] Versions detected', 'blue'))
@@ -220,11 +254,14 @@ parser = argparse.ArgumentParser(description='Extract relevant information from 
 parser.add_argument('url', help='URL to request and extract the information', action='store', nargs=1)
 #Misc options
 parser.add_argument('-T', '--timeout', dest='timeout', help='Set timeout for slow websites (sec).', nargs=1, type=int, default=[10])
-parser.add_argument('-d','--debug', dest='debug', help='Enable debug mode', action='store_true')
+verbose = parser.add_mutually_exclusive_group()
+verbose.add_argument('-i', '--info', dest='info', help='Show more information', action='store_true')
+verbose.add_argument('-d', '--debug', dest='debug', help='Enable debug mode', action='store_true')
 parser.add_argument('--format', dest='format',help='Format for form values. Options: normal (default),json', choices=['normal','json'], default='normal')
 #Options from curl
 parser.add_argument('-X', '--method', dest='method', help='Request method to use (by default GET).', nargs=1,
                     choices=['POST', 'GET', 'PUT', 'DELETE', 'PATCH'], default='GET')
+parser.add_argument('--data', dest='data', help='Data for POST,PUT,DELETE and PATCH methods', nargs=1)
 parser.add_argument('-L', '--location', dest='redirect', help='Allow redirections', action='store_true')
 parser.add_argument('-H', '--headers', dest='headers', help='Request headers separated by commas', nargs=1)
 #Output options
@@ -235,8 +272,10 @@ args = parser.parse_args()
 
 #Main
 if __name__ == '__main__':
-    if args.debug:
-        logging.basicConfig(format='%(message)s',level=logging.INFO)
+    if args.info:
+        logging.basicConfig(format='%(message)s', level=logging.INFO)
+    elif args.debug:
+        logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.DEBUG)
     session = requests.session()
     session.max_redirects = 5
     if args.headers:
@@ -244,9 +283,17 @@ if __name__ == '__main__':
             key, value = header.split(':', 1)
             headers[key.strip(' ')] = value.strip(' ')
         logging.info("Using the following headers:\n{}".format(headers))
-    url = urlparse(args.url[0])
-    print('Extracting information from {}'.format(args.url[0]))
-    statusCode, responseHeaders, response = sendRequest(session, args.method, args.url[0])
+    try:
+        url = urlparse(args.url[0])
+        print('Extracting information from {}'.format(args.url[0]))
+    except Exception as e:
+        print(e)
+    else:
+        if args.method != 'GET' and not args.data:
+            parser.error('--data option is required with {} method. If the request does not use any data, send " "'.format(args.method))
+            exit()
+        else:
+            statusCode, responseHeaders, response = sendRequest(session, args.method, args.url[0])
 
     getSecurityHeaders()
     getRoutes()

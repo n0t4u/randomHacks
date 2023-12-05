@@ -10,6 +10,7 @@
 #imports
 import argparse
 from termcolor import colored
+import glob
 import os
 import re
 import subprocess
@@ -110,7 +111,7 @@ def generateOutput(ip):
 
 #Argparse
 parser= argparse.ArgumentParser()
-parser.add_argument("file",help="nmap sV .gnmap file to parse",nargs=1)
+parser.add_argument("file",help="nmap sV .gnmap file to parse. Suppoerted wildcard between ''. Example: 'namp_sT_*.gnmap'",nargs=1)
 parser.add_argument("-p","--print",dest="print", help="Print results instead of saving them into a file", action="store_true")
 parser.add_argument("-o","--order",dest="order", help="Output specific order separated by commas. Example: ip,port,protocol,state,service,version", nargs=1)
 #parser.add_argument("-u","--unknown",dest="unknown", help="Remove unknown services", action="store_true")
@@ -118,7 +119,12 @@ args = parser.parse_args()
 
 #Main
 if __name__ == '__main__':
-	if os.path.splitext(args.file[0])[1] != ".gnmap":
-		print(colored("[ERROR]","red")," .gnmap file required")
-	else:
-		parseData(args.file[0])
+	files = glob.glob(args.file[0])
+	if not files:
+		print(colored("[ERROR]","red")," File/s not found.")
+		exit(0)
+	for file in files:
+		if os.path.splitext(file)[1] != ".gnmap": #Get extension
+			print(colored("[ERROR]","red")," .gnmap file required.")
+		else:
+			parseData(file)

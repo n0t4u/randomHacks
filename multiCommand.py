@@ -30,7 +30,7 @@ def showCommands():
     sys.exit(0)
 
 def openssl(ip, port):
-    command="openssl s_client -showcerts -connect {ip}:{port} </dev/null | openssl_{ip}_{port}".format(ip=ip, port=port)
+    command="openssl s_client -showcerts -connect {ip}:{port} </dev/null | tee openssl_{ip}_{port}".format(ip=ip, port=port)
     print(command)
     subprocess.Popen(command, shell=False, check=True)
     return

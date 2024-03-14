@@ -11,7 +11,9 @@ Repository with small scripts for specific hacking tasks.
 - [fromNmapsVtoCSV](#fromnmapsvtocsv)
 - [LinuxAlias](#LinuxAlias)
 - [manageProject](https://github.com/n0t4u/manageProject)
+- [multiCommand](#multiCommand)
 - [nmapScans](#nmapscans)
+- [TokenBruteforce](#tokenBruteforce)
 - [WindowsAlias](#WindowsAlias)
 
 **Note.** Major projects have been moved to its own repository.
@@ -60,7 +62,7 @@ python3 fromNapsVtoCSV.py nmap_sV_127.0.0.1.gnmap --order=ip,port,service,versio
 # Multiple files
 for file in $(ls nmap_sV_*.gnmap); do python3 fromNmapsVtoCSV.py $file --print; done > nmapParser.txt
 ```
-Order output options.   ip,port,protocol,state,service,version
+Order output options: ip,port,protocol,state,service,version
 
 ## LinuxAlias
 Small bash script that automatically add some alias to you bash or zsh shell.
@@ -68,8 +70,20 @@ Small bash script that automatically add some alias to you bash or zsh shell.
 ### TO DO
 - Add checks before adding any alias.
 
+## multiCommand
+(**In development**) Python script for executing the same command into several IP automatically
+
+``` shell
+multicommand.py command -f FILE [-s SEPARATOR]
+```
+Right now, only openssl and testssl commands are available.
+
+### TO DO
+- Add more commands to the list
+- Implements threading
+
 ## nmapScans
-Bash script that executes a full ports scan, parse the results and performs a second scan with version option only to the open ports.
+Bash script that executes, by default, a full ports scan, parse the results and performs a second scan with version option only to the open ports. The scan can be customize with all nmap options and can be stopped and resumed. 
 
 ### Usage
 ``` bash
@@ -84,9 +98,10 @@ chmod +x nmapScans.sh
 ./nmapScans.sh ips.txt --resume
 ```
 ### TO DO
-- Add optional discovery scan option
-- Add optional UDP scan option
 - Check nmap installation
+
+## TokenBruteforce
+(**In development**) Python script to perform bruteforce attacks to pages that have a anti CSRF token.
 
 ## WindowsAlias
 1. Create an alias.bat file (C:\Users\n0t4u\Documents\alias.bat)

@@ -91,13 +91,13 @@ getOpenPorts() {
 
 nmapsV() {
 	echo -e "${Blue}[$(date '+%Y-%m-%d %H:%M:%S')] Nmap version scan to ${1} and ports ${2} with options ${3}${ColorOff}"
-	sudo sh -c "nmap ${3} -p ${2} -oA nmap_sV_${1} ${1} " # --allports --version-all
-	echo -e "${Blue}[$(date '+%Y-%m-%d %H:%M:%S')] Nmap version scan saved to nmap_sV_${1}${ColorOff}"
+	sudo sh -c "nmap ${3} -p ${2} -oA nmap_sV_${subName}_${1} ${1} " # --allports --version-all
+	echo -e "${Blue}[$(date '+%Y-%m-%d %H:%M:%S')] Nmap version scan saved to nmap_sV_${subName}_${1}${ColorOff}"
 	if [ $? -eq 130 ]; then
 		trap_ctrlc
 	else
 		scanned+=("${1}")
-		sudo chown "${user}":"${user}" nmap_sV_"${1}".*
+		sudo chown "${user}":"${user}" "nmap_sV_${subName}_${1}".*
 	fi
 }
 

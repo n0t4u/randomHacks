@@ -33,11 +33,11 @@ securityHeaders = [
     "Content-Type",
     "Strict-Transport-Security",
 	"Content-Security-Policy",
+    "Permissions-Policy",
     "Access-Control-Allow-Origin",
     "Cross-Origin-Opener-Policy",
     "Cross-Origin-Embedder-Policy",
-    "Cross-Origin-Resource-Policy",
-	"Permissions-Policy"
+    "Cross-Origin-Resource-Policy"
 ]
 deprecatedSecurityHeaders = [
     "X-XSS-Protection",
@@ -129,28 +129,48 @@ def getForms():
     minResponse = re.sub('(\r|\n|\t| {2,}(?= ))','',response)
     #minResponse = re.sub('</form>','</form>\n',minResponse)
     minResponse = re.sub(r'<form','\n<form',minResponse)
-    #print(minResponse)
-    formsTags = re.findall('< ?form[\S ]+</form>',minResponse) #TODO. No detecta el formulario detail_incidence que tiene un multipart
+    formsTags = re.findall(r'< ?form[\S ]+</form>',minResponse)
     logging.info('Obtained {} forms'.format(len(formsTags)))
     for find in formsTags:
-        #print("\n"+find)
         findFormTag = re.split(r'>',find,1)[0]
-        #print(findFormTag)
-        name = re.search(r'(?<=name=["\'])[\S]+(?=["\'])', findFormTag)
-        method = re.search(r'(?<=method=["\'])[\S]+(?=["\'])', findFormTag)
-        action = re.search(r'(?<=action=["\'])[\S ]+(?=["\']>?)', findFormTag)
-        enctype = re.search(r'(?<=enctype=["\'])[\S]+(?=["\']>?)', findFormTag)
+        name = re.search(r'((?<=name=["\'])|(?<=id=["\']))\S+(?=["\'])', findFormTag)
+        if name is None:
+            name = "-"
+        else:
+            name = findFormTag[name.start():name.end()]
+        method = re.search(r'(?<=method=["\'])\S+(?=["\'])', findFormTag)
+        if method is None:
+            method = "-"
+        else:
+            method = findFormTag[method.start():method.end()]
+        action = re.search(r'(?<=action=["\'])[^"\']+(?=["\']>?)', findFormTag)
+        if action is None:
+            action = "-"
+        else:
+            action = findFormTag[action.start():action.end()]
+        enctype = re.search(r'(?<=enctype=["\'])\S+(?=["\']>?)', findFormTag)
         if enctype and findFormTag[enctype.start():enctype.end()] == 'multipart/form-data':
             print("Possible file upload. Reason: multipart/form-data form")
             inputValues = None #TODO. Extract form inputs
         else:
             inputValues = getInputValues(find,format=args.format)
-        formInfo = dict(name=findFormTag[name.start():name.end()], method=findFormTag[method.start():method.end()], action=findFormTag[action.start():action.end()], inputs=inputValues)
+        #formInfo = dict(name=findFormTag[name.start():name.end()], method=findFormTag[method.start():method.end()], action=findFormTag[action.start():action.end()], inputs=inputValues)
+        formInfo = dict(name=name, method=method, action=action, enctype=enctype, inputs=inputValues)
         forms.append(formInfo)
         #logging.info(print(formInfo))
     print(colored('\n[»] Forms detected','blue'))
     for form in forms:
-        print('{}\t{}://{}{}\t{}'.format(form['method'].upper(), url.scheme, url.netloc, re.sub(' ', '%20', form['action']), form['inputs']))
+        if action == "-":
+            print('{}\t{}://{}\t\t{}'.format(form['method'].upper(), url.scheme, url.netloc, form['inputs']))
+        else:
+            #If the action has the complete URL, remove the scheme and the domain.
+            if re.search('^https?://', form['action'], re.I):
+                form['action'] = '/{}'.format(form['action'].split('/',3)[-1])
+            if form['method'] == "GET":
+                print('{}\t{}://{}{}?{}'.format(form['method'].upper(), url.scheme, url.netloc, re.sub(' ', '%20', form['action']), form['inputs']))
+            else:
+                print('{}\t{}://{}{}\t{}'.format(form['method'].upper(), url.scheme, url.netloc, re.sub(' ', '%20', form['action']), form['inputs']))
+
     return
 
 
@@ -216,8 +236,8 @@ def getLinks():
             print('{}://{}{}'.format(url.scheme,url.hostname,link))
         elif re.search(r'(tel:|mailto:)',link):
             print(link)
-        else:
-            print("NO {}".format(link))
+        #else:
+            #print("NO {}".format(link))
 
 def getVersions():
     print(colored('\n[»] Versions detected', 'blue'))

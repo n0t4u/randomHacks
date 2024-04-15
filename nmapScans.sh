@@ -65,7 +65,7 @@ setup () {
 		#echo "MATCH: ${BASH_REMATCH[1]}"
 		subName+="_range"
 	else
-		echo -e "${Red}[ERROR]${ColorOff} Condition not matched"
+		echo -e "${Red}[ERROR]${ColorOff} Condition not matched. Are you scanning common ports?"
 	fi
 
 	touch ./.nmapScans.log
@@ -144,7 +144,8 @@ elif [ "$#" -eq 2 ]; then
 	fi
 fi
 setup
-versionOptions=$(echo "${options}" | sed "s/-p\(-\| \?[0-9,\-]\+\)/${versionAux}/g")
+#Remove port scan option from the basic scan to only scan open ports
+versionOptions="$(echo "${options}" | sed "s/-p\(-\| \?[0-9,\-]\+\)//g"|xargs) ${versionAux}"
 #versionOptions= echo "${options}//-p(-|[0-9,\-]+)/${versionAux}"
 echo -e "${Blue}Basic scan options${ColorOff}\t${options}\n${Blue}Version scan options${ColorOff}\t${versionOptions}"
 

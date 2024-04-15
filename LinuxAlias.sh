@@ -17,7 +17,9 @@ declare -a alias=('cd..="cd .."'
 'DNSResolver="python3 /opt/randomHacks/DNSResolver.py"'
 )
 
-declare -a functions=('back() {pathChange=""; for n in {1..$1}; do pathChange+="../" ;done; cd "${pathChange}";}')
+declare -a functions=('back() {pathChange=""; for n in {1..$1}; do pathChange+="../" ;done; cd "${pathChange}";}'
+'mkcd(){mkdir -p "${1}"; cd "${1}";}'
+'secListsSearch() {for file in $(find /opt/SecLists -name "*${1}*" -type f); do wc -l $file; done;}')
 
 shellFile=""
 

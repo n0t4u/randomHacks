@@ -13,6 +13,7 @@ Repository with small scripts for specific hacking tasks.
 - [manageProject](https://github.com/n0t4u/manageProject)
 - [multiCommand](#multiCommand)
 - [nmapScans](#nmapscans)
+- [testsslExtractor](#testsslExtractor)
 - [TokenBruteforce](#tokenBruteforce)
 - [WindowsAlias](#WindowsAlias)
 
@@ -102,6 +103,14 @@ chmod +x nmapScans.sh
 
 ## TokenBruteforce
 (**In development**) Python script to perform bruteforce attacks to pages that have a anti CSRF token.
+
+## TestsslExtractor
+Simple bash script to extract SSL vulnerabilities from several IPs at once
+
+### Usage
+``` sh
+./testsslExtractor [PATH/TO/FILES]
+```
 
 ## WindowsAlias
 1. Create an alias.bat file (C:\Users\n0t4u\Documents\alias.bat)

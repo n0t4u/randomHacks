@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #Author: n0t4u
-#Version: 0.1.0
+#Version: 0.1.2
 
 #Imports
 import argparse
@@ -12,33 +12,55 @@ import sys
 
 #Variables=
 SHOWCOMMANDS= """multicommand.py command -f FILE [-s SEPARATOR]
-    
+
 Available Commands
     1. openssl
     2. testssl
+    3. sslscan
+    4. ssh_audit
+    5. terrapin
     """
 
 #Definitions
 def showCommands():
     print("""MultiCommand. Execute several commands to multiple assets at once.
     Usage: multicommand.py command -f FILE [-s SEPARATOR]
-    
+
     \tAvailable Commands
     1. openssl
     2. testssl
+    3. sslscan
+    4. ssh_audit
+    5. terrapin
     """)
     sys.exit(0)
 
 def openssl(ip, port):
     command="openssl s_client -showcerts -connect {ip}:{port} </dev/null | tee openssl_{ip}_{port}".format(ip=ip, port=port)
     print(command)
-    subprocess.Popen(command, shell=False, check=True)
+    subprocess.run(command, shell=False)
     return
 
 def testssl(ip, port):
     command="testssl --color 2 -oA testssl_{ip}_{port} https://{ip}:{port}".format(ip=ip, port=port)
-    subprocess.Popen(command, shell=False, check=True)
+    subprocess.run(command, shell=True)
     return
+
+def sslscan(ip,port):
+	command="sslscan --show-ciphers {ip}:{port} | tee sslscan_{ip}_{port}".format(ip=ip, port=port)
+	subprocess.run(command,shell=True)
+	return
+
+
+def ssh_audit(ip,port):
+	command="ssh-audit --port={port} {ip} | tee ssh-audit_{ip}_{port}".format(ip=ip, port=port)
+	subprocess.run(command,shell=True)
+	return
+
+def terrapin(ip,port):
+	command="Terrapin-Scanner --connect {ip}:{port} | tee terrapin_{ip}_{port}".format(ip=ip, port=port)
+	subprocess.run(command,shell=True)
+	return
 
 #Argparse
 parser = argparse.ArgumentParser(prog="multiCommand" ,description="Execute specific checks to multiple assets at once.", usage=SHOWCOMMANDS)

@@ -71,8 +71,21 @@ elif [[ "$#" -eq 2 ]]; then
 	timeout=$2
 fi
 # shellcheck disable=SC2162
-while read line; do
-	bannerGrabber "${line}"
+local maxThreads=10
+local currentThreads=0
+while IFS= read -r line || [[ -n "$line" ]]; do
+	bannerGrabber "${line}" &
+	((currentThreads++))
+	if [[ $currentThreads -ge $maxThreads ]]; then
+		wait
+		currentThreads=0
+	fi
 done < "${1}"
+
+# Wait for any remaining threads to finish
+wait
+#while read line; do
+#	bannerGrabber "${line}"
+#done < "${1}"
 results
 exit 0

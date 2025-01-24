@@ -45,7 +45,7 @@ def openssl(ip, port):
 #Not tested yet
 def ssh_audit(ip,port):
 	command="ssh-audit --port={port} {ip}".format(ip=ip, port=port)
-		outputFilename= "ssh-audit_{ip}_{port}".format(ip=ip,port=port)
+	outputFilename= "ssh-audit_{ip}_{port}".format(ip=ip,port=port)
 	output= subprocess.run(command,shell=True, capture_output=True,text=True)
 	with open(outputFilename,"w") as file:
 		file.write(output.stdout)
